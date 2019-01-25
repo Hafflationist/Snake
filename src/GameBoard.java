@@ -126,6 +126,7 @@ public class GameBoard {
      */
     public int getBoardHeight()
     {
+
         return _boardHeight - 2;
     }
 

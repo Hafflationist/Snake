@@ -6,14 +6,16 @@ import java.util.LinkedList;
  * The use of the snake class is to track the current position of the snake on the game board
  */
 public class Snake {
-    private GameBoard _gameBoard;
+    private final int _BOARDHEIGHT;
+    private final int _BOARDWIDTH;
     private List<Bodypart> _snakebody;
 
     /**
      * Creates a Snake object
      */
-    public Snake(GameBoard gameBoard) {
-        _gameBoard = gameBoard;
+    public Snake(int boardHeight, int boardWidth) {
+        _BOARDHEIGHT = boardHeight;
+        _BOARDWIDTH = boardWidth;
         _snakebody = new LinkedList<Bodypart>();
         genStartPos();
     }
@@ -23,8 +25,8 @@ public class Snake {
      */
     private void genStartPos() {
         Random random = new Random();
-        Bodypart head = new Bodypart(random.nextInt(_gameBoard.getBoardHeight() - 1) + 1,
-                random.nextInt(_gameBoard.getBoardWidth() - 1) + 1);
+        Bodypart head = new Bodypart(random.nextInt(_BOARDHEIGHT - 1) + 1,
+                random.nextInt(_BOARDWIDTH - 1) + 1);
         _snakebody.add(head);
     }
 

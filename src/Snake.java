@@ -1,20 +1,18 @@
 import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
+
 /**
- *
+ * The use of the snake class is to track the current position of the snake on the game board
  */
 public class Snake {
-    private int _length;
     private GameBoard _gameBoard;
     private List<Bodypart> _snakebody;
 
     /**
      * Creates a Snake object
      */
-    public Snake(GameBoard gameBoard)
-    {
-        _length = 1;
+    public Snake(GameBoard gameBoard) {
         _gameBoard = gameBoard;
         _snakebody = new LinkedList<Bodypart>();
         genStartPos();
@@ -23,135 +21,106 @@ public class Snake {
     /**
      * Randomly generates a starting position for the snake
      */
-    private void genStartPos()
-    {
+    private void genStartPos() {
         Random random = new Random();
-        Bodypart head = new Bodypart(random.nextInt(_gameBoard.getBoardHeight()-1) + 1,
-                random.nextInt(_gameBoard.getBoardWidth()-1)+1);
+        Bodypart head = new Bodypart(random.nextInt(_gameBoard.getBoardHeight() - 1) + 1,
+                random.nextInt(_gameBoard.getBoardWidth() - 1) + 1);
         _snakebody.add(head);
     }
 
     /**
      * Moves the snake one field forward on the game board
+     * depending on the current direction
      */
-    public void moveForward()
-    {
+    public void moveForward() {
         Bodypart head = _snakebody.get(0);
-        if (head._prevY > head._currentY) {
+        if (head.getprevY() > head.getY()) {
             //direction: north
-            head.registerPos(head._currentY-1,head._currentX);
-        }
-        else if (head._prevY < head._currentY)
-        {
+            head.registerPos(head.getY() - 1, head.getX());
+        } else if (head.getprevY() < head.getY()) {
             //direction: south
-            head.registerPos(head._currentY+1, head._currentX);
-        }
-        else if (head._prevX > head._currentX)
-        {
+            head.registerPos(head.getY() + 1, head.getX());
+        } else if (head.getprevX() > head.getX()) {
             //direction: west
-            head.registerPos(head._currentY, head._currentX-1);
-        }
-        else
-        {
+            head.registerPos(head.getY(), head.getX() - 1);
+        } else {
             //direction: east
-            head.registerPos(head._currentY, head._currentX+1);
+            head.registerPos(head.getY(), head.getX() + 1);
         }
-        adjustSnakePos();
+        adjustPosValues();
     }
 
     /**
      * Moves the snake one field to the left on the game board
+     * depending on the current direction
      */
-    public void turnLeft()
-    {
+    public void turnLeft() {
         Bodypart head = _snakebody.get(0);
-        if (head._prevY > head._currentY) {
+        if (head.getprevY() > head.getY()) {
             //direction: north
-            head.registerPos(head._currentY, head._currentX - 1);
-        }
-        else if (head._prevY < head._currentY)
-        {
+            head.registerPos(head.getY(), head.getX() - 1);
+        } else if (head.getprevY() < head.getY()) {
             //direction: south
-            head.registerPos(head._currentY, head._currentX + 1);
-        }
-        else if (head._prevX > head._currentX)
-        {
+            head.registerPos(head.getY(), head.getX() + 1);
+        } else if (head.getprevX() > head.getX()) {
             //direction: west
-            head.registerPos(head._currentY + 1, head._currentX);
-        }
-        else
-        {
+            head.registerPos(head.getY() + 1, head.getX());
+        } else {
             //direction: east
-            head.registerPos(head._currentY - 1, head._currentX);
+            head.registerPos(head.getY() - 1, head.getX());
         }
-        adjustSnakePos();
+        adjustPosValues();
     }
 
     /**
      * Moves the snake one field to the right on the game board
+     * depending on the current direction
      */
-    public void turnRight()
-    {
+    public void turnRight() {
         Bodypart head = _snakebody.get(0);
-        if (head._prevY > head._currentY) {
+        if (head.getprevY() > head.getY()) {
             //direction: north
-            head.registerPos(head._currentY, head._currentX + 1);
-        }
-        else if (head._prevY < head._currentY)
-        {
+            head.registerPos(head.getY(), head.getX() + 1);
+        } else if (head.getprevY() < head.getY()) {
             //direction: south
-            head.registerPos(head._currentY, head._currentX -1);
-        }
-        else if (head._prevX > head._currentX)
-        {
+            head.registerPos(head.getY(), head.getX() - 1);
+        } else if (head.getprevX() > head.getX()) {
             //direction: west
-            head.registerPos(head._currentY - 1, head._currentX);
-        }
-        else
-        {
+            head.registerPos(head.getY() - 1, head.getX());
+        } else {
             //direction: east
-            head.registerPos(head._currentY + 1, head._currentX);
+            head.registerPos(head.getY() + 1, head.getX());
         }
-        adjustSnakePos();
+        adjustPosValues();
     }
 
     /**
      * Increases the length of the snake's body by 1
      */
-    public void increaseLength()
-    {
+    public void increaseLength() {
         Bodypart lastElement = _snakebody.get(_snakebody.size() - 1);
-        _snakebody.add(new Bodypart(lastElement._prevY, lastElement._prevX));
+        _snakebody.add(new Bodypart(lastElement.getprevY(), lastElement.getprevX()));
     }
 
     /**
-     * Adjusts the position values of each bodypart
+     * Adjusts the x and y values of each body part (except the head)
+     * after the snake has been moved
      */
-    private void adjustSnakePos()
-    {
-        if(_snakebody.size() > 1) {
+    private void adjustPosValues() {
+        if (_snakebody.size() > 1) {
             for (int i = 1; i < _snakebody.size(); i++) {
                 Bodypart predecessor = _snakebody.get(i - 1);
-                _snakebody.get(i).registerPos(predecessor._prevY, predecessor._prevX);
+                _snakebody.get(i).registerPos(predecessor.getprevY(), predecessor.getprevX());
             }
         }
-        //TODO: Method nees to be moved to gamelogic class
-        for(Bodypart bodypart : _snakebody)
-        {
-            _gameBoard.resetField(bodypart._prevY, bodypart._prevX);
-            _gameBoard.markPosition(bodypart._currentY, bodypart._currentX);
-        }
     }
-
 
     /**
-     * @return the current length of the Snake
+     * @return Returns the list with the body parts of the snake
      */
-    public int getLength()
-    {
-        return _length;
+    public List<Bodypart> getBodyparts() {
+        return _snakebody;
     }
-
 
 
     /**
@@ -167,11 +136,11 @@ public class Snake {
 
         /**
          * Creates a new bodypart object
+         *
          * @param posY the Y value of the bodypart on the board
          * @param posX the X value of the bodypart on the board
          */
-        Bodypart(int posY, int posX)
-        {
+        Bodypart(int posY, int posX) {
             _currentY = posY;
             _currentX = posX;
             _prevY = _currentY;
@@ -180,11 +149,11 @@ public class Snake {
 
         /**
          * Registers the position of the bodypart
+         *
          * @param posY the y value of the new position
          * @param posX the x value of the new position
          */
-        public void registerPos(int posY, int posX)
-        {
+        public void registerPos(int posY, int posX) {
             _prevY = _currentY;
             _prevX = _currentX;
             _currentY = posY;
@@ -192,38 +161,30 @@ public class Snake {
         }
 
         /**
-         *
          * @return Returns the current Y value of the body part position
          */
-        public int getY()
-        {
+        public int getY() {
             return _currentY;
         }
 
         /**
-         *
          * @return Returns the current X value of the body part position
          */
-        public int getX()
-        {
+        public int getX() {
             return _currentX;
         }
 
         /**
-         *
          * @return Returns the previous Y value of the body part position
          */
-        public int getprevY()
-        {
+        public int getprevY() {
             return _prevY;
         }
 
         /**
-         *
          * @return Returns the previous X value of the body part position
          */
-        public int getprevX()
-        {
+        public int getprevX() {
             return _prevX;
         }
     }

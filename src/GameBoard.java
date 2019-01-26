@@ -1,5 +1,6 @@
 /**
- *
+ * The GameBoard class manages the state of the playing area by setting tracking the objects that
+ * are being placed on the board.
  */
 public class GameBoard {
 
@@ -53,12 +54,9 @@ public class GameBoard {
      * Sets the position of the snake on the game board
      */
     public void markPosition(int posY, int posX) throws IndexOutOfBoundsException {
-        if (posY > 0 && posY < _boardHeight - 1 && posX > 0 && posX < _boardWidth - 1)
-        {
+        if (posY > 0 && posY < _boardHeight - 1 && posX > 0 && posX < _boardWidth - 1) {
             _board[posY][posX] = _OCCUPIEDFIELD;
-        }
-        else
-        {
+        } else {
             throw new IndexOutOfBoundsException("markPosition: Index out of bounds!");
         }
 

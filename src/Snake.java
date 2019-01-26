@@ -1,11 +1,13 @@
 import java.util.Random;
+import java.util.List;
+import java.util.LinkedList;
 /**
  *
  */
 public class Snake {
     private int _length;
     private GameBoard _gameBoard;
-    private Bodypart _head;
+    private List<Bodypart> _snakebody;
 
     /**
      * Creates a Snake object
@@ -14,6 +16,7 @@ public class Snake {
     {
         _length = 1;
         _gameBoard = gameBoard;
+        _snakebody = new LinkedList<Bodypart>();
         genStartPos();
     }
 
@@ -23,8 +26,9 @@ public class Snake {
     private void genStartPos()
     {
         Random random = new Random();
-        _head = new Bodypart(random.nextInt(_gameBoard.getBoardHeight()-1) + 1,
+        Bodypart head = new Bodypart(random.nextInt(_gameBoard.getBoardHeight()-1) + 1,
                 random.nextInt(_gameBoard.getBoardWidth()-1)+1);
+        _snakebody.add(head);
     }
 
     /**
@@ -32,7 +36,27 @@ public class Snake {
      */
     public void moveForward()
     {
-
+        Bodypart head = _snakebody.get(0);
+        if (head._prevY > head._currentY) {
+            //direction: north
+            head.registerPos(head._currentY-1,head._currentX);
+        }
+        else if (head._prevY < head._currentY)
+        {
+            //direction: south
+            head.registerPos(head._currentY+1, head._currentX);
+        }
+        else if (head._prevX > head._currentX)
+        {
+            //direction: west
+            head.registerPos(head._currentY, head._currentX-1);
+        }
+        else
+        {
+            //direction: east
+            head.registerPos(head._currentY, head._currentX+1);
+        }
+        adjustSnakePos();
     }
 
     /**
@@ -40,7 +64,27 @@ public class Snake {
      */
     public void turnLeft()
     {
-
+        Bodypart head = _snakebody.get(0);
+        if (head._prevY > head._currentY) {
+            //direction: north
+            head.registerPos(head._currentY, head._currentX - 1);
+        }
+        else if (head._prevY < head._currentY)
+        {
+            //direction: south
+            head.registerPos(head._currentY, head._currentX + 1);
+        }
+        else if (head._prevX > head._currentX)
+        {
+            //direction: west
+            head.registerPos(head._currentY + 1, head._currentX);
+        }
+        else
+        {
+            //direction: east
+            head.registerPos(head._currentY - 1, head._currentX);
+        }
+        adjustSnakePos();
     }
 
     /**
@@ -48,16 +92,57 @@ public class Snake {
      */
     public void turnRight()
     {
+        Bodypart head = _snakebody.get(0);
+        if (head._prevY > head._currentY) {
+            //direction: north
+            head.registerPos(head._currentY, head._currentX + 1);
+        }
+        else if (head._prevY < head._currentY)
+        {
+            //direction: south
+            head.registerPos(head._currentY, head._currentX -1);
+        }
+        else if (head._prevX > head._currentX)
+        {
+            //direction: west
+            head.registerPos(head._currentY - 1, head._currentX);
+        }
+        else
+        {
+            //direction: east
+            head.registerPos(head._currentY + 1, head._currentX);
+        }
+        adjustSnakePos();
+    }
 
+    /**
+     * Increases the length of the snake's body by 1
+     */
+    public void increaseLength()
+    {
+        Bodypart lastElement = _snakebody.get(_snakebody.size() - 1);
+        _snakebody.add(new Bodypart(lastElement._prevY, lastElement._prevX));
     }
 
     /**
      * Adjusts the position values of each bodypart
      */
-    public void adjustSnakePos()
+    private void adjustSnakePos()
     {
-
+        if(_snakebody.size() > 1) {
+            for (int i = 1; i < _snakebody.size(); i++) {
+                Bodypart predecessor = _snakebody.get(i - 1);
+                _snakebody.get(i).registerPos(predecessor._prevY, predecessor._prevX);
+            }
+        }
+        //TODO: Method nees to be moved to gamelogic class
+        for(Bodypart bodypart : _snakebody)
+        {
+            _gameBoard.resetField(bodypart._prevY, bodypart._prevX);
+            _gameBoard.markPosition(bodypart._currentY, bodypart._currentX);
+        }
     }
+
 
     /**
      * @return the current length of the Snake
@@ -90,7 +175,7 @@ public class Snake {
             _currentY = posY;
             _currentX = posX;
             _prevY = _currentY;
-            _prevX = _currentX;
+            _prevX = _currentX + 1;
         }
 
         /**

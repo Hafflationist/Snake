@@ -50,12 +50,18 @@ public class GameBoard {
     }
 
     /**
-     * TODO: Implement method
      * Sets the position of the snake on the game board
-     *
-     * @param snake Snake object
      */
-    public void markPosition(Snake snake) {
+    public void markPosition(int posY, int posX) throws IndexOutOfBoundsException {
+        if (posY > 0 && posY < _boardHeight - 1 && posX > 0 && posX < _boardWidth - 1)
+        {
+            _board[posY][posX] = _OCCUPIEDFIELD;
+        }
+        else
+        {
+            throw new IndexOutOfBoundsException("markPosition: Index out of bounds!");
+        }
+
     }
 
     /**
@@ -96,7 +102,7 @@ public class GameBoard {
      * @param posY x-position of the field
      * @param posX y-position of the field
      */
-    public boolean clearAhead(int posY, int posX) throws IndexOutOfBoundsException {
+    public boolean fieldClear(int posY, int posX) throws IndexOutOfBoundsException {
         if (posY >= 0 && posY < _boardHeight && posX >= 0 && posX < _boardWidth) {
             if (_board[posY][posX] == _OCCUPIEDFIELD || _board[posY][posX] == _BORDERFIELD) {
                 return false;

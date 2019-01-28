@@ -24,7 +24,6 @@ public class Bodypart {
 
     /**
      * Registers the position of the bodypart
-     *
      * @param posY the y value of the new position
      * @param posX the x value of the new position
      */

@@ -1,4 +1,5 @@
 import java.awt.event.*;
+import java.util.Random;
 import javax.swing.*;
 
 /**
@@ -48,6 +49,7 @@ public class GameBoard extends KeyAdapter implements ActionListener {
                 _board[i][j] = _EMPTYFIELD;
             }
         }
+        setSnack();
     }
 
     /**
@@ -57,6 +59,7 @@ public class GameBoard extends KeyAdapter implements ActionListener {
         _mainWindow = new JFrame("Snake");
         _mainWindow.setSize(_boardWidth * 10, _boardWidth * 10);
         _mainWindow.setResizable(false);
+        _mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         _mainWindow.setLocationRelativeTo(null);
         _mainWindow.addKeyListener(this);
         _mainWindow.setVisible(true);
@@ -64,16 +67,20 @@ public class GameBoard extends KeyAdapter implements ActionListener {
 
     /**
      * Sets a snack to the desired position. A snack is marked by a value of 2
-     *
-     * @param posY x-position of the snack
-     * @param posX y-position of the snack
      */
-    public void setSnack(int posY, int posX) throws IndexOutOfBoundsException {
-        if (posY >= 0 && posY < _boardHeight && posX >= 0 && posX < _boardWidth) {
-            _board[posY][posX] = _SNACKFIELD;
-        } else {
-            throw new IndexOutOfBoundsException("setSnack: Index out of bounds!");
+    public void setSnack() {
+        Random random = new Random();
+        boolean occupied = true;
+        while (occupied) {
+            int yPos = random.nextInt(_boardHeight - 1) + 1;
+            int xPos = random.nextInt(_boardWidth - 1) + 1;
+            if (_board[yPos][xPos] == _EMPTYFIELD)
+            {
+                _board[yPos][xPos] = _SNACKFIELD;
+                occupied = false;
+            }
         }
+
     }
 
     /**
@@ -103,37 +110,66 @@ public class GameBoard extends KeyAdapter implements ActionListener {
 
     /**
      * Checks, if the snake is on a field with a snack
-     *
-     * @param posY x-position of the field
-     * @param posX y-position of the field
      */
-    public boolean isOnSnack(int posY, int posX) throws IndexOutOfBoundsException {
-        if (posY > 0 && posY < _boardHeight - 1 && posX > 0 && posX < _boardWidth - 1) {
-            if (_board[posY][posX] == _SNACKFIELD) {
-                _board[posY][posX] = _EMPTYFIELD;
-                return true;
-            }
-            return false;
-        } else {
-            throw new IndexOutOfBoundsException("isOnSnack: Index out of bounds!");
+    public boolean snackAhead() {
+        int yPos = _snake.getBodyparts().get(0).getY();
+        int xPos = _snake.getBodyparts().get(0).getX();
+        Direction direction = _snake.getDirection();
+        switch (direction) {
+            case NORTH:
+                if (_board[yPos - 1][xPos] == _SNACKFIELD) {
+                    return true;
+                }
+                break;
+            case WEST:
+                if (_board[yPos][xPos - 1] == _SNACKFIELD) {
+                    return true;
+                }
+                break;
+            case SOUTH:
+                if (_board[yPos + 1][xPos] == _SNACKFIELD) {
+                    return true;
+                }
+                break;
+            case EAST:
+                if (_board[yPos][xPos + 1] == _SNACKFIELD) {
+                    return true;
+                }
+                break;
         }
+        return false;
     }
 
     /**
      * Checks if the next field in the moving direction is clear
-     *
-     * @param posY x-position of the field
-     * @param posX y-position of the field
      */
-    public boolean fieldClear(int posY, int posX) throws IndexOutOfBoundsException {
-        if (posY >= 0 && posY < _boardHeight && posX >= 0 && posX < _boardWidth) {
-            if (_board[posY][posX] == _OCCUPIEDFIELD || _board[posY][posX] == _BORDERFIELD) {
-                return false;
-            }
-            return true;
-        } else {
-            throw new IndexOutOfBoundsException("Index out of bounds!");
+    public boolean fieldAheadClear() {
+        int yPos = _snake.getBodyparts().get(0).getY();
+        int xPos = _snake.getBodyparts().get(0).getX();
+        Direction direction = _snake.getDirection();
+        switch (direction) {
+            case NORTH:
+                if (_board[yPos - 1][xPos] < _EMPTYFIELD) {
+                    return false;
+                }
+                break;
+            case WEST:
+                if (_board[yPos][xPos - 1] < _EMPTYFIELD) {
+                    return false;
+                }
+                break;
+            case SOUTH:
+                if (_board[yPos + 1][xPos] < _EMPTYFIELD) {
+                    return false;
+                }
+                break;
+            case EAST:
+                if (_board[yPos][xPos + 1] < _EMPTYFIELD) {
+                    return false;
+                }
+                break;
         }
+        return true;
     }
 
     /**
@@ -165,9 +201,18 @@ public class GameBoard extends KeyAdapter implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        _snake.move();
-        adjustSnakePos();
-        printBoard();
+        if(fieldAheadClear()) {
+            if(snackAhead()) {
+                _snake.increaseLength();
+                setSnack();
+            }
+            _snake.move();
+            adjustSnakePos();
+            printBoard();
+        } else {
+            _timer.stop();
+            System.out.println("Game over");
+        }
     }
 
     /**

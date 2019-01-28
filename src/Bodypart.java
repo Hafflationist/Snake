@@ -19,7 +19,7 @@ public class Bodypart {
         _currentY = posY;
         _currentX = posX;
         _prevY = _currentY;
-        _prevX = _currentX + 1;
+        _prevX = _currentX;
     }
 
     /**

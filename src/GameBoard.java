@@ -1,8 +1,11 @@
+import java.awt.event.*;
+import javax.swing.*;
+
 /**
  * The GameBoard class manages the state of the playing area by setting tracking the objects that
  * are being placed on the board.
  */
-public class GameBoard {
+public class GameBoard extends KeyAdapter implements ActionListener {
 
     private int[][] _board;
     private int _boardWidth;
@@ -11,6 +14,10 @@ public class GameBoard {
     private static final int _OCCUPIEDFIELD = 1;
     private static final int _EMPTYFIELD = 2;
     private static final int _SNACKFIELD = 3;
+    private static final int DELAY = 2000;
+    private Timer _timer;
+    private JFrame _mainWindow;
+    private Snake _snake;
 
     /**
      * Creates a new GameBoard Object
@@ -22,7 +29,14 @@ public class GameBoard {
         _boardWidth = boardWidth + 2;
         _boardHeight = boardHeight + 2;
         _board = new int[_boardHeight][_boardWidth];
+        _snake = new Snake(_boardHeight, _boardWidth);
         initBoard();
+        initUI();
+        _timer = new Timer(DELAY, this);
+    }
+
+    public void start() {
+        _timer.start();
     }
 
     /**
@@ -34,6 +48,18 @@ public class GameBoard {
                 _board[i][j] = _EMPTYFIELD;
             }
         }
+    }
+
+    /**
+     * Initializes the graphical user interface
+     */
+    private void initUI() {
+        _mainWindow = new JFrame("Snake");
+        _mainWindow.setSize(_boardWidth * 10, _boardWidth * 10);
+        _mainWindow.setResizable(false);
+        _mainWindow.setLocationRelativeTo(null);
+        _mainWindow.addKeyListener(this);
+        _mainWindow.setVisible(true);
     }
 
     /**
@@ -59,7 +85,6 @@ public class GameBoard {
         } else {
             throw new IndexOutOfBoundsException("markPosition: Index out of bounds!");
         }
-
     }
 
     /**
@@ -135,6 +160,47 @@ public class GameBoard {
                 System.out.print(_board[i][j] + " ");
             }
             System.out.println();
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        _snake.move();
+        adjustSnakePos();
+        printBoard();
+    }
+
+    /**
+     * Adjusts the direction of the snake according to the arrow key pressed
+     *
+     * @param e Key that has been pressed
+     */
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int keycode = e.getKeyCode();
+        switch (keycode) {
+            case KeyEvent.VK_LEFT:
+                _snake.setDirection(Direction.WEST);
+                break;
+            case KeyEvent.VK_RIGHT:
+                _snake.setDirection(Direction.EAST);
+                break;
+            case KeyEvent.VK_DOWN:
+                _snake.setDirection(Direction.SOUTH);
+                break;
+            case KeyEvent.VK_UP:
+                _snake.setDirection(Direction.NORTH);
+                break;
+        }
+    }
+
+    /**
+     * Adjusts the snake's position on the game board
+     */
+    private void adjustSnakePos() {
+        for (Bodypart bodypart : _snake.getBodyparts()) {
+            resetField(bodypart.getprevY(), bodypart.getprevX());
+            markPosition(bodypart.getY(), bodypart.getX());
         }
     }
 

@@ -9,6 +9,7 @@ public class Snake {
     private final int _BOARDHEIGHT;
     private final int _BOARDWIDTH;
     private List<Bodypart> _snakebody;
+    private Direction _direction;
 
     /**
      * Creates a Snake object
@@ -28,72 +29,50 @@ public class Snake {
         Bodypart head = new Bodypart(random.nextInt(_BOARDHEIGHT - 1) + 1,
                 random.nextInt(_BOARDWIDTH - 1) + 1);
         _snakebody.add(head);
+        _direction = Direction.WEST;
     }
 
     /**
      * Moves the snake one field forward on the game board
      * depending on the current direction
      */
-    public void moveForward() {
+    public void move() {
         Bodypart head = _snakebody.get(0);
-        if (head.getprevY() > head.getY()) {
-            //direction: north
-            head.registerPos(head.getY() - 1, head.getX());
-        } else if (head.getprevY() < head.getY()) {
-            //direction: south
-            head.registerPos(head.getY() + 1, head.getX());
-        } else if (head.getprevX() > head.getX()) {
-            //direction: west
-            head.registerPos(head.getY(), head.getX() - 1);
-        } else {
-            //direction: east
-            head.registerPos(head.getY(), head.getX() + 1);
+
+        switch(_direction)
+        {
+            case NORTH:
+                head.registerPos(head.getY() - 1, head.getX());
+                break;
+            case SOUTH:
+                head.registerPos(head.getY() + 1, head.getX());
+                break;
+            case WEST:
+                head.registerPos(head.getY(), head.getX() - 1);
+                break;
+            case EAST:
+                head.registerPos(head.getY(), head.getX() + 1);
+                break;
         }
         adjustPosValues();
     }
 
     /**
-     * Moves the snake one field to the left on the game board
-     * depending on the current direction
+     * Sets the direction of the snake
+     * @param direction Direction in which the snake should move
      */
-    public void turnLeft() {
-        Bodypart head = _snakebody.get(0);
-        if (head.getprevY() > head.getY()) {
-            //direction: north
-            head.registerPos(head.getY(), head.getX() - 1);
-        } else if (head.getprevY() < head.getY()) {
-            //direction: south
-            head.registerPos(head.getY(), head.getX() + 1);
-        } else if (head.getprevX() > head.getX()) {
-            //direction: west
-            head.registerPos(head.getY() + 1, head.getX());
-        } else {
-            //direction: east
-            head.registerPos(head.getY() - 1, head.getX());
-        }
-        adjustPosValues();
+    public void setDirection(Direction direction)
+    {
+        _direction = direction;
     }
 
     /**
-     * Moves the snake one field to the right on the game board
-     * depending on the current direction
+     *
+     * @return Returns the current direction of the snake
      */
-    public void turnRight() {
-        Bodypart head = _snakebody.get(0);
-        if (head.getprevY() > head.getY()) {
-            //direction: north
-            head.registerPos(head.getY(), head.getX() + 1);
-        } else if (head.getprevY() < head.getY()) {
-            //direction: south
-            head.registerPos(head.getY(), head.getX() - 1);
-        } else if (head.getprevX() > head.getX()) {
-            //direction: west
-            head.registerPos(head.getY() - 1, head.getX());
-        } else {
-            //direction: east
-            head.registerPos(head.getY() + 1, head.getX());
-        }
-        adjustPosValues();
+    public Direction getDirection()
+    {
+        return _direction;
     }
 
     /**
@@ -123,7 +102,4 @@ public class Snake {
     public List<Bodypart> getBodyparts() {
         return _snakebody;
     }
-
-
-
 }

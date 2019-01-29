@@ -19,12 +19,11 @@ public class Bodypart {
         _currentY = posY;
         _currentX = posX;
         _prevY = _currentY;
-        _prevX = _currentX + 1;
+        _prevX = _currentX;
     }
 
     /**
      * Registers the position of the bodypart
-     *
      * @param posY the y value of the new position
      * @param posX the x value of the new position
      */

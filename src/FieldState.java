@@ -1,0 +1,3 @@
+public enum FieldState {
+    OCCUPIEDFIELD, EMPTYFIELD, SNACKFIELD
+}

@@ -12,7 +12,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private Field[][] _board;
     private int _boardWidth;
     private int _boardHeight;
-    private static final int DELAY = 300;
+    private static final int DELAY = 200;
     private Timer _timer;
     private JFrame _mainWindow;
     private Snake _snake;
@@ -62,12 +62,14 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      */
     private void initUI() {
         _mainWindow = new JFrame("Snake");
-        _mainWindow.setSize(_boardWidth * 10, _boardWidth * 10);
+        _mainWindow.setSize(_boardWidth * 10, _boardHeight * 10);
         _mainWindow.setResizable(false);
         _mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         _mainWindow.setLocationRelativeTo(null);
         _mainWindow.addKeyListener(this);
         _mainWindow.add(this);
+        setPreferredSize(new Dimension(_boardWidth * 10, _boardHeight * 10));
+        _mainWindow.pack();
         _mainWindow.setVisible(true);
     }
 
@@ -81,6 +83,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
 
     /**
      * Sets a snack to the desired position. A snack is marked by a value of 2
+     * TODO: Needs to be optimized
      */
     public void setSnack() {
         Random random = new Random();

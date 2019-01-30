@@ -12,12 +12,14 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private Field[][] _board;
     private int _boardWidth;
     private int _boardHeight;
-    private static final int DELAY = 200;
+    private static final int DELAY = 100;
     private Timer _timer;
     private JFrame _mainWindow;
     private Snake _snake;
     private int snackPosY;
     private int snackPosX;
+    private boolean _gameRunning;
+
 
     /**
      * Creates a new GameBoard Object
@@ -33,6 +35,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         initBoard();
         initUI();
         _timer = new Timer(DELAY, this);
+        _gameRunning = false;
     }
 
     public void start() {
@@ -81,6 +84,20 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         drawObjects(g);
     }
 
+    private void drawObjects(Graphics g)
+    {
+        for (Bodypart bodypart : _snake.getBodyparts()) {
+            int y = bodypart.getY();
+            int x = bodypart.getX();
+            resetField(bodypart.getprevY(), bodypart.getprevX());
+            markPosition(y, x);
+            g.setColor(Color.GREEN);
+            g.fillOval(_board[y][x].getFieldX(), _board[y][x].getFieldY(),10,10);
+            g.setColor(Color.RED);
+            g.fillOval(_board[snackPosY][snackPosX].getFieldX(),_board[snackPosY][snackPosX].getFieldY(), 10, 10);
+        }
+    }
+
     /**
      * Sets a snack to the desired position. A snack is marked by a value of 2
      * TODO: Needs to be optimized
@@ -96,21 +113,6 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
                 occupied = false;
             }
         }
-    }
-
-    private void drawObjects(Graphics g)
-    {
-        for (Bodypart bodypart : _snake.getBodyparts()) {
-            int y = bodypart.getY();
-            int x = bodypart.getX();
-            resetField(bodypart.getprevY(), bodypart.getprevX());
-            markPosition(y, x);
-            g.setColor(Color.GREEN);
-            g.fillOval(_board[y][x].getFieldX(), _board[y][x].getFieldY(),10,10);
-            g.setColor(Color.RED);
-            g.fillOval(_board[snackPosY][snackPosX].getFieldX(),_board[snackPosY][snackPosX].getFieldY(), 10, 10);
-        }
-        repaint();
     }
 
     /**
@@ -214,6 +216,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
             repaint();
         } else {
             _timer.stop();
+            _gameRunning = false;
             System.out.println("Game over");
         }
     }
@@ -244,6 +247,13 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
             case KeyEvent.VK_UP:
                 _snake.setDirection(Direction.NORTH);
                 break;
+            case KeyEvent.VK_ENTER:
+                if(!_gameRunning)
+                {
+                    _gameRunning = true;
+                    start();
+                }
+
         }
     }
 

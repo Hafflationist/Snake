@@ -1,5 +1,4 @@
 # Snake
-Java Snake Project
 
 The goal of this project was to develop a simple game using java to get more familiar with the java language in general and
 the Swing and Graphics packages in particular. 

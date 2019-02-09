@@ -9,32 +9,32 @@ import javax.swing.*;
  */
 public class GameBoard extends JPanel implements ActionListener, KeyListener {
 
-    private Field[][] _board;
+    private Field[][] board;
     private static final int BOARDWIDTH = 22;
     private static final int BOARDHEIGHT = 22;
     private static final int DELAY = 100;
-    private Timer _timer;
-    private Snake _snake;
+    private Timer timer;
+    private Snake snake;
     private int snackPosY;
     private int snackPosX;
-    private boolean _gameRunning;
-    private Random _random;
+    private boolean gameRunning;
+    private Random random;
 
     /**
      * Creates a new GameBoard Object
      */
     public GameBoard() {
-        _board = new Field[BOARDHEIGHT][BOARDWIDTH];
-        _snake = new Snake(BOARDHEIGHT, BOARDWIDTH);
-        _random = new Random();
+        board = new Field[BOARDHEIGHT][BOARDWIDTH];
+        snake = new Snake(BOARDHEIGHT, BOARDWIDTH);
+        random = new Random();
         initBoard();
         initUI();
-        _timer = new Timer(DELAY, this);
-        _gameRunning = false;
+        timer = new Timer(DELAY, this);
+        gameRunning = false;
     }
 
     private void start() {
-        _timer.start();
+        timer.start();
     }
 
     /**
@@ -43,11 +43,11 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private void initBoard() {
         for (int i = 0; i < BOARDHEIGHT; i++) {
             for (int j = 0; j < BOARDWIDTH; j++) {
-                _board[i][j] = new Field((i + 1) * 10 - 5, (j + 1) * 10 - 5);
+                board[i][j] = new Field((i + 1) * 10 - 5, (j + 1) * 10 - 5);
                 if (i == 0 || j == 0 || i == BOARDHEIGHT - 1 || j == BOARDWIDTH - 1) {
-                    _board[i][j].setState(FieldState.OCCUPIEDFIELD);
+                    board[i][j].setState(FieldState.OCCUPIEDFIELD);
                 } else {
-                    _board[i][j].setState(FieldState.EMPTYFIELD);
+                    board[i][j].setState(FieldState.EMPTYFIELD);
                 }
             }
         }
@@ -78,15 +78,15 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     }
 
     private void drawObjects(Graphics g) {
-        for (Bodypart bodypart : _snake.getBodyparts()) {
+        for (Bodypart bodypart : snake.getBodyparts()) {
             int y = bodypart.getY();
             int x = bodypart.getX();
             resetField(bodypart.getprevY(), bodypart.getprevX());
             markPosition(y, x);
             g.setColor(Color.GREEN);
-            g.fillOval(_board[y][x].getFieldX(), _board[y][x].getFieldY(), 10, 10);
+            g.fillOval(board[y][x].getFieldX(), board[y][x].getFieldY(), 10, 10);
             g.setColor(Color.RED);
-            g.fillOval(_board[snackPosY][snackPosX].getFieldX(), _board[snackPosY][snackPosX].getFieldY(), 10, 10);
+            g.fillOval(board[snackPosY][snackPosX].getFieldX(), board[snackPosY][snackPosX].getFieldY(), 10, 10);
         }
     }
 
@@ -99,10 +99,10 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private void setSnack() {
         boolean occupied = true;
         while (occupied) {
-            snackPosY = _random.nextInt(BOARDHEIGHT - 1) + 1;
-            snackPosX = _random.nextInt(BOARDWIDTH - 1) + 1;
-            if (_board[snackPosY][snackPosX].getState() == FieldState.EMPTYFIELD) {
-                _board[snackPosY][snackPosX].setState(FieldState.SNACKFIELD);
+            snackPosY = random.nextInt(BOARDHEIGHT - 1) + 1;
+            snackPosX = random.nextInt(BOARDWIDTH - 1) + 1;
+            if (board[snackPosY][snackPosX].getState() == FieldState.EMPTYFIELD) {
+                board[snackPosY][snackPosX].setState(FieldState.SNACKFIELD);
                 occupied = false;
             }
         }
@@ -113,7 +113,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      */
     private void markPosition(int posY, int posX) throws IndexOutOfBoundsException {
         if (posY > 0 && posY < BOARDHEIGHT - 1 && posX > 0 && posX < BOARDWIDTH - 1) {
-            _board[posY][posX].setState(FieldState.OCCUPIEDFIELD);
+            board[posY][posX].setState(FieldState.OCCUPIEDFIELD);
         } else {
             throw new IndexOutOfBoundsException("markPosition: Index out of bounds!");
         }
@@ -127,7 +127,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      */
     private void resetField(int posY, int posX) throws IndexOutOfBoundsException {
         if (posY > 0 && posY < BOARDHEIGHT - 1 && posX > 0 && posX < BOARDWIDTH - 1) {
-            _board[posY][posX].setState(FieldState.EMPTYFIELD);
+            board[posY][posX].setState(FieldState.EMPTYFIELD);
         } else {
             throw new IndexOutOfBoundsException("resetField: Index out of bounds!");
         }
@@ -137,26 +137,26 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      * Checks, if the snake is on a field with a snack
      */
     private boolean snackAhead() {
-        int yPos = _snake.getBodyparts().get(0).getY();
-        int xPos = _snake.getBodyparts().get(0).getX();
-        switch (_snake.getDirection()) {
+        int yPos = snake.getBodyparts().get(0).getY();
+        int xPos = snake.getBodyparts().get(0).getX();
+        switch (snake.getDirection()) {
             case NORTH:
-                if (_board[yPos - 1][xPos].getState() == FieldState.SNACKFIELD) {
+                if (board[yPos - 1][xPos].getState() == FieldState.SNACKFIELD) {
                     return true;
                 }
                 break;
             case WEST:
-                if (_board[yPos][xPos - 1].getState() == FieldState.SNACKFIELD) {
+                if (board[yPos][xPos - 1].getState() == FieldState.SNACKFIELD) {
                     return true;
                 }
                 break;
             case SOUTH:
-                if (_board[yPos + 1][xPos].getState() == FieldState.SNACKFIELD) {
+                if (board[yPos + 1][xPos].getState() == FieldState.SNACKFIELD) {
                     return true;
                 }
                 break;
             case EAST:
-                if (_board[yPos][xPos + 1].getState() == FieldState.SNACKFIELD) {
+                if (board[yPos][xPos + 1].getState() == FieldState.SNACKFIELD) {
                     return true;
                 }
                 break;
@@ -168,26 +168,26 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      * Checks if the next field in the moving direction is clear
      */
     private boolean fieldAheadClear() {
-        int yPos = _snake.getBodyparts().get(0).getY();
-        int xPos = _snake.getBodyparts().get(0).getX();
-        switch (_snake.getDirection()) {
+        int yPos = snake.getBodyparts().get(0).getY();
+        int xPos = snake.getBodyparts().get(0).getX();
+        switch (snake.getDirection()) {
             case NORTH:
-                if (_board[yPos - 1][xPos].getState() == FieldState.OCCUPIEDFIELD) {
+                if (board[yPos - 1][xPos].getState() == FieldState.OCCUPIEDFIELD) {
                     return false;
                 }
                 break;
             case WEST:
-                if (_board[yPos][xPos - 1].getState() == FieldState.OCCUPIEDFIELD) {
+                if (board[yPos][xPos - 1].getState() == FieldState.OCCUPIEDFIELD) {
                     return false;
                 }
                 break;
             case SOUTH:
-                if (_board[yPos + 1][xPos].getState() == FieldState.OCCUPIEDFIELD) {
+                if (board[yPos + 1][xPos].getState() == FieldState.OCCUPIEDFIELD) {
                     return false;
                 }
                 break;
             case EAST:
-                if (_board[yPos][xPos + 1].getState() == FieldState.OCCUPIEDFIELD) {
+                if (board[yPos][xPos + 1].getState() == FieldState.OCCUPIEDFIELD) {
                     return false;
                 }
                 break;
@@ -200,15 +200,15 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         if (fieldAheadClear()) {
             if (snackAhead()) {
                 System.out.println("Snack ahead!");
-                _snake.increaseLength();
+                snake.increaseLength();
                 setSnack();
             }
 
-            _snake.move();
+            snake.move();
             repaint();
         } else {
-            _timer.stop();
-            _gameRunning = false;
+            timer.stop();
+            gameRunning = false;
             System.out.println("Game over");
         }
     }
@@ -227,20 +227,20 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                _snake.setDirection(Direction.WEST);
+                snake.setDirection(Direction.WEST);
                 break;
             case KeyEvent.VK_RIGHT:
-                _snake.setDirection(Direction.EAST);
+                snake.setDirection(Direction.EAST);
                 break;
             case KeyEvent.VK_DOWN:
-                _snake.setDirection(Direction.SOUTH);
+                snake.setDirection(Direction.SOUTH);
                 break;
             case KeyEvent.VK_UP:
-                _snake.setDirection(Direction.NORTH);
+                snake.setDirection(Direction.NORTH);
                 break;
             case KeyEvent.VK_ENTER:
-                if (!_gameRunning) {
-                    _gameRunning = true;
+                if (!gameRunning) {
+                    gameRunning = true;
                     start();
                 }
 

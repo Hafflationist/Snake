@@ -5,10 +5,10 @@
  */
 public class Bodypart {
     private static int instances = 0;
-    private int _currentX;
-    private int _currentY;
-    private int _prevX;
-    private int _prevY;
+    private int currentX;
+    private int currentY;
+    private int prevX;
+    private int prevY;
 
     /**
      * Creates a new bodypart object
@@ -17,10 +17,10 @@ public class Bodypart {
      * @param posX the X value of the bodypart on the board
      */
     Bodypart(int posY, int posX) {
-        _currentY = posY;
-        _currentX = posX;
-        _prevY = _currentY;
-        _prevX = _currentX;
+        currentY = posY;
+        currentX = posX;
+        prevY = currentY;
+        prevX = currentX;
         instances++;
         System.out.println(instances);
     }
@@ -31,37 +31,37 @@ public class Bodypart {
      * @param posX the x value of the new position
      */
     public void registerPos(int posY, int posX) {
-        _prevY = _currentY;
-        _prevX = _currentX;
-        _currentY = posY;
-        _currentX = posX;
+        prevY = currentY;
+        prevX = currentX;
+        currentY = posY;
+        currentX = posX;
     }
 
     /**
      * @return Returns the current Y value of the body part position
      */
     public int getY() {
-        return _currentY;
+        return currentY;
     }
 
     /**
      * @return Returns the current X value of the body part position
      */
     public int getX() {
-        return _currentX;
+        return currentX;
     }
 
     /**
      * @return Returns the previous Y value of the body part position
      */
     public int getprevY() {
-        return _prevY;
+        return prevY;
     }
 
     /**
      * @return Returns the previous X value of the body part position
      */
     public int getprevX() {
-        return _prevX;
+        return prevX;
     }
 }

@@ -6,6 +6,11 @@ import javax.swing.*;
 /**
  * The GameBoard class manages the state of the playing area by setting tracking the objects that
  * are being placed on the board.
+ * TODO: Optimize placement algorithm for snacks
+ * TODO: Integrate a "press to start" button
+ * TODO: Implement a "game over" message with a restart button
+ * TODO: Add green walls to the game board indicating the borders
+ * TODO: Arrange the panel to fit perfectly in the JFrame
  */
 public class GameBoard extends JPanel implements ActionListener, KeyListener {
 

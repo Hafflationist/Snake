@@ -77,6 +77,7 @@ public class Snake {
 
     /**
      * Increases the length of the snake's body by 1
+     * TODO: Implement a data structure that avoids creating new bodypart objects
      */
     public void increaseLength() {
         Bodypart lastElement = _snakebody.get(_snakebody.size() - 1);

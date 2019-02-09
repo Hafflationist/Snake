@@ -1,32 +1,29 @@
 public class Field {
-    private FieldState _fieldstate;
-    private final int _yPos;
-    private final int _xPos;
+    private FieldState fieldstate;
+    private final int yPos;
+    private final int xPos;
+    private static int instances = 0;
 
-    public Field(int yPos, int xPos)
-    {
-        _yPos = yPos;
-        _xPos = xPos;
-
+    public Field(int yPos, int xPos) {
+        this.yPos = yPos;
+        this.xPos = xPos;
+        instances++;
+        System.out.println("Field Class instances: " + instances);
     }
 
-    public int getFieldY()
-    {
-        return _yPos;
+    public int getFieldY() {
+        return yPos;
     }
 
-    public int getFieldX()
-    {
-        return _xPos;
+    public int getFieldX() {
+        return xPos;
     }
 
-    public void setState(FieldState fieldState)
-    {
-        _fieldstate = fieldState;
+    public void setState(FieldState fieldState) {
+        fieldstate = fieldState;
     }
 
-    public FieldState getState()
-    {
-        return _fieldstate;
+    public FieldState getState() {
+        return fieldstate;
     }
 }

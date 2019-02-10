@@ -9,14 +9,14 @@ import javax.swing.*;
  * TODO: Optimize placement algorithm for snacks
  * TODO: Integrate a "press to start" button
  * TODO: Implement a "game over" message with a restart button
- * TODO: Add green walls to the game board indicating the borders
- * TODO: Arrange the panel to fit perfectly in the JFrame
  */
 public class GameBoard extends JPanel implements ActionListener, KeyListener {
 
     private Field[][] board;
     private static final int BOARDWIDTH = 22;
     private static final int BOARDHEIGHT = 22;
+    private static final int FRAMEWIDTH = 230;
+    private static final int FRAMEHEIGHT = 230;
     private static final int DELAY = 100;
     private Timer timer;
     private Snake snake;
@@ -64,13 +64,13 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
      */
     private void initUI() {
         JFrame _mainWindow = new JFrame("Snake");
-        _mainWindow.setSize(BOARDWIDTH * 10, BOARDHEIGHT * 10);
+        _mainWindow.setSize(FRAMEWIDTH, FRAMEHEIGHT);
         _mainWindow.setResizable(false);
         _mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         _mainWindow.setLocationRelativeTo(null);
         _mainWindow.addKeyListener(this);
         _mainWindow.add(this);
-        setPreferredSize(new Dimension(BOARDWIDTH * 10, BOARDHEIGHT * 10));
+        setPreferredSize(new Dimension(FRAMEWIDTH, FRAMEHEIGHT));
         _mainWindow.pack();
         _mainWindow.setVisible(true);
     }
@@ -80,6 +80,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         setBackground(Color.BLACK);
         drawObjects(g);
+        drawBorders(g);
     }
 
     private void drawObjects(Graphics g) {
@@ -96,8 +97,27 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     }
 
     /**
+     * Draws the vertical and horizontal borders on the game board
+     * @param g
+     */
+    private void drawBorders(Graphics g) {
+        g.setColor(Color.BLUE);
+        //Draw vertical borders
+        for(int i = 0; i < BOARDHEIGHT; i++)
+        {
+            g.fillRect(board[i][0].getFieldX(), board[i][0].getFieldY(), 10, 10);
+            g.fillRect(board[i][BOARDWIDTH - 1].getFieldX(), board[i][BOARDWIDTH - 1].getFieldY(), 10, 10);
+        }
+        //Draw horizontal borders
+        for(int j = 1; j < BOARDWIDTH - 1; j++)
+        {
+            g.fillRect(board[0][j].getFieldX(), board[0][j].getFieldY(), 10, 10);
+            g.fillRect(board[BOARDHEIGHT - 1][j].getFieldX(), board[BOARDHEIGHT - 1][j].getFieldY(), 10, 10);
+        }
+    }
+
+    /**
      * Sets a snack to the desired position. A snack is marked by a value of 2
-     * TODO: Optimierungsbedarf
      * Liste implementieren, die die Anzahl der leeren Felder beeinhaltet sowie deren Positionen zu dem Zeitpunkt
      * zu dem ein neuer Ort für einen Snack gesucht werden muss.
      */
@@ -204,7 +224,6 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     public void actionPerformed(ActionEvent e) {
         if (fieldAheadClear()) {
             if (snackAhead()) {
-                System.out.println("Snack ahead!");
                 snake.increaseLength();
                 setSnack();
             }

@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -18,16 +17,14 @@ public class Snake {
         BOARDHEIGHT = boardHeight;
         BOARDWIDTH = boardWidth;
         snakebody = new LinkedList<Bodypart>();
-        genStartPos();
+        setStartPos();
     }
 
     /**
-     * Randomly generates a starting position for the snake
+     * Sets a starting position for the snake
      */
-    private void genStartPos() {
-        Random random = new Random();
-        Bodypart head = new Bodypart(random.nextInt(BOARDHEIGHT - 1) + 1,
-                random.nextInt(BOARDWIDTH - 1) + 1);
+    private void setStartPos() {
+        Bodypart head = new Bodypart(BOARDHEIGHT / 2, BOARDWIDTH / 2);
         snakebody.add(head);
         direction = Direction.WEST;
     }

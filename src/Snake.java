@@ -21,11 +21,9 @@ public class Snake {
     }
 
     public void resetSnake() {
-        System.out.println("Current Size: " + snakebody.size());
         if (!snakebody.isEmpty()) {
             snakebody.clear();
         }
-        System.out.println("Size: " + snakebody.size());
         Bodypart head = new Bodypart(BOARDHEIGHT / 2, BOARDWIDTH / 2);
         snakebody.add(head);
         direction = Direction.WEST;

@@ -4,7 +4,6 @@
  * the position of the snake on the game board
  */
 public class Bodypart {
-    private static int instances = 0;
     private int currentX;
     private int currentY;
     private int prevX;
@@ -21,8 +20,6 @@ public class Bodypart {
         currentX = posX;
         prevY = currentY;
         prevX = currentX;
-        instances++;
-        System.out.println(instances);
     }
 
     /**

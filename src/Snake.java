@@ -17,13 +17,13 @@ public class Snake {
         BOARDHEIGHT = boardHeight;
         BOARDWIDTH = boardWidth;
         snakebody = new LinkedList<Bodypart>();
-        setStartPos();
+        resetSnake();
     }
 
-    /**
-     * Sets a starting position for the snake
-     */
-    private void setStartPos() {
+    public void resetSnake() {
+        if (!snakebody.isEmpty()) {
+            snakebody.clear();
+        }
         Bodypart head = new Bodypart(BOARDHEIGHT / 2, BOARDWIDTH / 2);
         snakebody.add(head);
         direction = Direction.WEST;
@@ -36,8 +36,7 @@ public class Snake {
     public void move() {
         Bodypart head = snakebody.get(0);
 
-        switch(direction)
-        {
+        switch (direction) {
             case NORTH:
                 head.registerPos(head.getY() - 1, head.getX());
                 break;
@@ -56,19 +55,17 @@ public class Snake {
 
     /**
      * Sets the direction of the snake
+     *
      * @param direction Direction in which the snake should move
      */
-    public void setDirection(Direction direction)
-    {
+    public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
     /**
-     *
      * @return Returns the current direction of the snake
      */
-    public Direction getDirection()
-    {
+    public Direction getDirection() {
         return direction;
     }
 

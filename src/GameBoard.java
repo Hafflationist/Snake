@@ -23,6 +23,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private int snackPosY;
     private int snackPosX;
     private boolean gameRunning;
+    private boolean gameover;
     private Random random;
 
     /**
@@ -36,6 +37,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         initUI();
         timer = new Timer(DELAY, this);
         gameRunning = false;
+        gameover = false;
     }
 
     private void start() {
@@ -98,19 +100,18 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
 
     /**
      * Draws the vertical and horizontal borders on the game board
+     *
      * @param g
      */
     private void drawBorders(Graphics g) {
         g.setColor(Color.BLUE);
         //Draw vertical borders
-        for(int i = 0; i < BOARDHEIGHT; i++)
-        {
+        for (int i = 0; i < BOARDHEIGHT; i++) {
             g.fillRect(board[i][0].getFieldX(), board[i][0].getFieldY(), 10, 10);
             g.fillRect(board[i][BOARDWIDTH - 1].getFieldX(), board[i][BOARDWIDTH - 1].getFieldY(), 10, 10);
         }
         //Draw horizontal borders
-        for(int j = 1; j < BOARDWIDTH - 1; j++)
-        {
+        for (int j = 1; j < BOARDWIDTH - 1; j++) {
             g.fillRect(board[0][j].getFieldX(), board[0][j].getFieldY(), 10, 10);
             g.fillRect(board[BOARDHEIGHT - 1][j].getFieldX(), board[BOARDHEIGHT - 1][j].getFieldY(), 10, 10);
         }
@@ -233,6 +234,7 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         } else {
             timer.stop();
             gameRunning = false;
+            gameover = true;
             System.out.println("Game over");
         }
     }
@@ -263,11 +265,18 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
                 snake.setDirection(Direction.NORTH);
                 break;
             case KeyEvent.VK_ENTER:
-                if (!gameRunning) {
+                if (!gameRunning && !gameover) {
+                    gameRunning = true;
+                    start();
+                } else if (gameover) {
+                    for (Bodypart bodypart : snake.getBodyparts()) {
+                        resetField(bodypart.getY(), bodypart.getX());
+                    }
+                    snake.resetSnake();
+                    gameover = false;
                     gameRunning = true;
                     start();
                 }
-
         }
     }
 

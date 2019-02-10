@@ -22,7 +22,6 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
     private Snake snake;
     private int snackPosY;
     private int snackPosX;
-    private boolean gameRunning;
     private boolean gameover;
     private Random random;
 
@@ -36,11 +35,10 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
         initBoard();
         initUI();
         timer = new Timer(DELAY, this);
-        gameRunning = false;
         gameover = false;
     }
 
-    private void start() {
+    public void start() {
         timer.start();
     }
 
@@ -233,7 +231,6 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
             repaint();
         } else {
             timer.stop();
-            gameRunning = false;
             gameover = true;
             System.out.println("Game over");
         }
@@ -265,16 +262,12 @@ public class GameBoard extends JPanel implements ActionListener, KeyListener {
                 snake.setDirection(Direction.NORTH);
                 break;
             case KeyEvent.VK_ENTER:
-                if (!gameRunning && !gameover) {
-                    gameRunning = true;
-                    start();
-                } else if (gameover) {
+                if (gameover) {
                     for (Bodypart bodypart : snake.getBodyparts()) {
                         resetField(bodypart.getY(), bodypart.getX());
                     }
                     snake.resetSnake();
                     gameover = false;
-                    gameRunning = true;
                     start();
                 }
         }

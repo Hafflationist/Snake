@@ -1,6 +1,6 @@
 /**
  * Enum used for the direction of the snake
  */
-public enum Direction {
+enum class Direction {
     NORTH, WEST, SOUTH, EAST
 }

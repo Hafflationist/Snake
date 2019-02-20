@@ -1,3 +1,3 @@
-public enum FieldState {
+enum class FieldState {
     OCCUPIEDFIELD, EMPTYFIELD, SNACKFIELD
 }

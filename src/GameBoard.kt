@@ -1,7 +1,13 @@
-import java.awt.*
-import java.awt.event.*
-import java.util.Random
-import javax.swing.*
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.Graphics
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
+import java.util.*
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.Timer
+import javax.swing.WindowConstants
 
 /**
  * The GameBoard class manages the state of the playing area by setting tracking the objects that
@@ -10,14 +16,15 @@ import javax.swing.*
  * TODO: Integrate a "press to start" button
  * TODO: Implement a "game over" message with a restart button
  */
-class GameBoard : JPanel(), ActionListener, KeyListener {
+class GameBoard : JPanel(), KeyListener {
+
 
     private val board: Array<Array<Field>>
-    private val timer: Timer
     private val snake: Snake
     private var snackPosY: Int = 0
     private var snackPosX: Int = 0
     private var gameover: Boolean = false
+    private var gamestarted: Boolean = false
     private val random: Random
 
     /**
@@ -38,12 +45,23 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
         random = Random()
         initBoard()
         initUI()
-        timer = Timer(DELAY, this)
-        gameover = false
-    }
+        kotlin.concurrent.timer(startAt = Calendar.getInstance().time!!, period = DELAY) {
+            if (gameover || !gamestarted) return@timer
+            if (fieldAheadClear()) {
+                if (snackAhead()) {
+                    snake.increaseLength()
+                    setSnack()
+                }
 
-    fun start() {
-        timer.start()
+                snake.move()
+                repaint()
+            } else {
+                gameover = true
+                println("Game over")
+            }
+        }
+
+        gameover = false
     }
 
     /**
@@ -77,10 +95,12 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
     }
 
     private fun drawObjects(g: Graphics) {
-        for (bodypart in snake.bodyparts) {
+        val last = snake.lastBodypart
+        if (last != null)
+            resetField(last.y, last.x)
+        snake.bodyparts.forEach { bodypart ->
             val y = bodypart.y
             val x = bodypart.x
-            resetField(bodypart.getprevY(), bodypart.getprevX())
             markPosition(y, x)
             g.color = Color.GREEN
             g.fillOval(board[y][x].fieldX, board[y][x].fieldY, 10, 10)
@@ -110,19 +130,16 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
 
     /**
      * Sets a snack to the desired position. A snack is marked by a value of 2
-     * Liste implementieren, die die Anzahl der leeren Felder beeinhaltet sowie deren Positionen zu dem Zeitpunkt
+     * Liste implementieren, die die Anzahl der leeren Felder beinhaltet sowie deren Positionen zu dem Zeitpunkt
      * zu dem ein neuer Ort für einen Snack gesucht werden muss.
      */
-    private fun setSnack() {
-        var occupied = true
-        while (occupied) {
-            snackPosY = random.nextInt(BOARDHEIGHT - 1) + 1
-            snackPosX = random.nextInt(BOARDWIDTH - 1) + 1
-            if (board[snackPosY][snackPosX].state == FieldState.EMPTYFIELD) {
-                board[snackPosY][snackPosX].state = FieldState.SNACKFIELD
-                occupied = false
-            }
-        }
+    private tailrec fun setSnack() {
+        snackPosY = random.nextInt(BOARDHEIGHT - 1) + 1
+        snackPosX = random.nextInt(BOARDWIDTH - 1) + 1
+        if (board[snackPosY][snackPosX].state == FieldState.EMPTYFIELD)
+            board[snackPosY][snackPosX].state = FieldState.SNACKFIELD
+        else
+            setSnack()
     }
 
     /**
@@ -179,44 +196,10 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
      * Checks if the next field in the moving direction is clear
      */
     private fun fieldAheadClear(): Boolean {
-        val yPos = snake.bodyparts[0].y
-        val xPos = snake.bodyparts[0].x
-        when (snake.direction) {
-            Direction.NORTH -> if (board[yPos - 1][xPos].state == FieldState.OCCUPIEDFIELD) {
-                return false
-            }
-            Direction.WEST -> if (board[yPos][xPos - 1].state == FieldState.OCCUPIEDFIELD) {
-                return false
-            }
-            Direction.SOUTH -> if (board[yPos + 1][xPos].state == FieldState.OCCUPIEDFIELD) {
-                return false
-            }
-            Direction.EAST -> if (board[yPos][xPos + 1].state == FieldState.OCCUPIEDFIELD) {
-                return false
-            }
-        }
-        return true
+        val coords = snake.getNextHeadPos(snake.direction)
+        return board[coords.first][coords.second].state != FieldState.OCCUPIEDFIELD
     }
 
-    override fun actionPerformed(e: ActionEvent) {
-        if (fieldAheadClear()) {
-            if (snackAhead()) {
-                snake.increaseLength()
-                setSnack()
-            }
-
-            snake.move()
-            repaint()
-        } else {
-            timer.stop()
-            gameover = true
-            println("Game over")
-        }
-    }
-
-    override fun keyTyped(e: KeyEvent) {
-
-    }
 
     /**
      * Adjusts the direction of the snake according to the arrow key pressed
@@ -224,24 +207,24 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
      * @param e Key that has been pressed
      */
     override fun keyPressed(e: KeyEvent) {
+        gamestarted = true
         when (e.keyCode) {
             KeyEvent.VK_LEFT -> snake.direction = Direction.WEST
             KeyEvent.VK_RIGHT -> snake.direction = Direction.EAST
             KeyEvent.VK_DOWN -> snake.direction = Direction.SOUTH
             KeyEvent.VK_UP -> snake.direction = Direction.NORTH
             KeyEvent.VK_ENTER -> if (gameover) {
-                for (bodypart in snake.bodyparts) {
-                    resetField(bodypart.y, bodypart.x)
-                }
+                snake.bodyparts.forEach { resetField(it.y, it.x) }
                 snake.resetSnake()
                 gameover = false
-                start()
             }
         }
     }
 
     override fun keyReleased(e: KeyEvent) {
+    }
 
+    override fun keyTyped(e: KeyEvent?) {
     }
 
     companion object {
@@ -249,7 +232,7 @@ class GameBoard : JPanel(), ActionListener, KeyListener {
         private val BOARDHEIGHT = 22
         private val FRAMEWIDTH = 230
         private val FRAMEHEIGHT = 230
-        private val DELAY = 100
+        private val DELAY = 100L
     }
 
 }
